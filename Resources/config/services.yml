@@ -1,0 +1,7 @@
+parameters:
+#    marty_krumo.example.class: Marty\KrumoBundle\Example
+
+services:
+#    marty_krumo.example:
+#        class: %marty_krumo.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
