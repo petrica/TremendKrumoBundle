@@ -15,6 +15,10 @@ and run the vendors script to download bundles:
 
     php bin/vendors install
 
+install assets if not already installed:
+
+    php app/console assets:install web
+
 Register Bundle in AppKernel.php
 
     public function registerBundles()
