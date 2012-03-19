@@ -1,6 +1,5 @@
 <?php
 
-namespace Tremend\KrumoBundle\Krumo;
 
 /**
 * Krumo: Structured information display solution
@@ -16,6 +15,8 @@ namespace Tremend\KrumoBundle\Krumo;
 * @version $Id: class.krumo.php 22 2007-12-02 07:38:18Z Mrasnika $
 */
 
+use Symfony\Component\HttpKernel\Kernel;
+
 /**
 * Krumo API
 *
@@ -25,6 +26,30 @@ namespace Tremend\KrumoBundle\Krumo;
 * @package Krumo
 */
 Class Krumo {
+
+    static $assetDir;
+
+    static $skin;
+
+    static $basePath;
+
+    static $truncateLength;
+
+    /**
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     */
+    protected $container;
+
+    public function __construct(Kernel $kernel) {
+        $this->container = $kernel->getContainer();
+
+        /**
+         * Initialize configuration
+         */
+        self::$assetDir = $this->container->getParameter('krumo.asset_dir');
+        self::$skin = $this->container->getParameter('krumo.skin');
+        self::$truncateLength = $this->container->getParameter('krumo.truncate_length');
+    }
 
 	/**
 	* Return Krumo version
@@ -585,39 +610,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 			}
 		}
 
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
-
-	/**
-	* Returns values from Krumo's configuration
-	*
-	* @param string $group
-	* @param string $name
-	* @param mixed $fallback
-	* @return mixed
-	*
-	* @access private
-	* @static
-	*/
-	Private Static Function _config($group, $name, $fallback=null) {
-		
-		static $_config = array();
-		
-		// not loaded ?
-		//
-		if (empty($_config)) {
-			$_config = (array) @parse_ini_file(
-				KRUMO_DIR . 'krumo.ini',
-				true);
-			}
-		
-		// exists ?
-		//
-		return (isset($_config[$group][$name]))
-			? $_config[$group][$name]
-			: $fallback;
-		}
-
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 	/**
 	* Print the skin (CSS)
@@ -637,11 +630,11 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 			}
 		
 		$css = '';
-		$skin = krumo::_config('skin', 'selected', 'default');
+		$skin = self::$skin;
 		
 		// custom selected skin ?
 		//
-		$_ = KRUMO_DIR . "skins/{$skin}/skin.css";
+		$_ = self::$assetDir . "/skins/{$skin}/skin.css";
 		if ($fp = @fopen($_, 'r', 1)) {
 			$css = fread($fp, filesize($_));
 			fclose($fp);
@@ -651,7 +644,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 		//
 		if (!$css && ($skin != 'default')) {
 			$skin = 'default';
-			$_ = KRUMO_DIR . "skins/default/skin.css";
+			$_ = self::$assetDir . "/skins/default/skin.css";
 			$css = join('', @file($_));
 			}
 		
@@ -661,13 +654,13 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 			
 			// fix the urls
 			//
-			$css_url = krumo::_config('css', 'url') . "skins/{$skin}/";
+			$css_url = 'krumo_url' . "skins/{$skin}/";
 			$css = preg_replace('~%url%~Uis', $css_url, $css);
 			
 			// the CSS
 			//
 			?>
-<!-- Using Krumo Skin: <?php echo preg_replace('~^' . preg_quote(realpath(KRUMO_DIR) . DIRECTORY_SEPARATOR) . '~Uis', '', realpath($_));?> -->
+<!-- Using Krumo Skin: <?php echo preg_replace('~^' . preg_quote(realpath(self::$assetDir) . DIRECTORY_SEPARATOR) . '~Uis', '', realpath($_));?> -->
 <style type="text/css">
 <!--/**/
 <?php echo $css?>
@@ -680,7 +673,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 			?>
 <script type="text/javascript">
 <!--//
-<?php echo join(file(KRUMO_DIR . "krumo.js"));?>
+<?php echo join(file(Krumo::$assetDir . "/js/krumo.js"));?>
 
 //-->
 </script>
@@ -1197,8 +1190,8 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 		//
 		$_extra = false;
 		$_ = $data;
-		if (strLen($data) > KRUMO_TRUNCATE_LENGTH) {
-			$_ = substr($data, 0, KRUMO_TRUNCATE_LENGTH - 3) . '...';
+		if (strLen($data) > self::$truncateLength) {
+			$_ = substr($data, 0, self::$truncateLength - 3) . '...';
 			$_extra = true;
 			}
 ?>
@@ -1248,3 +1241,21 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 
 //--end-of-class--	
 }
+
+//////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Alias of {@link krumo::dump()}
+ *
+ * @param mixed $data,...
+ *
+ * @see krumo::dump()
+ */
+Function krumo() {
+    $_ = func_get_args();
+    return call_user_func_array(
+        array('krumo', 'dump'), $_
+    );
+}
+
+//////////////////////////////////////////////////////////////////////////////

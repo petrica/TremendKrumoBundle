@@ -1,0 +1,4 @@
+tremend_krumo:
+    skin: orange
+    truncate_length: 50
+    asset_dir: %kernel.root_dir%/../web/bundles/tremendkrumo

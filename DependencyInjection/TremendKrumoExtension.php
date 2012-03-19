@@ -24,6 +24,7 @@ class TremendKrumoExtension extends Extension
 
         $container->setParameter('krumo.skin', $config['skin']);
         $container->setParameter('krumo.asset_dir', $config['asset_dir']);
+        $container->setParameter('krumo.truncate_length', $config['truncate_length']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');

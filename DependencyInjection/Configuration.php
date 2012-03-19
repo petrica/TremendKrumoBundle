@@ -18,10 +18,11 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $builder = new TreeBuilder();
-        $builder->root('krumo')
+        $builder->root('tremend_krumo')
             ->children()
                 ->scalarNode('skin')->defaultValue('orange')->end()
-                ->scalarNode('asset_dir')->defaultValue('%kernel.root_dir%/../web/bundle/tremendkrumo')->end()
+                ->scalarNode('truncate_length')->defaultValue(50)->end()
+                ->scalarNode('asset_dir')->defaultValue('%kernel.root_dir%/../web/bundles/tremendkrumo')->end()
             ->end()
         ;
 

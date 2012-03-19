@@ -1,7 +1,11 @@
 parameters:
-#    marty_krumo.example.class: Marty\KrumoBundle\Example
+    tremend_krumo.krumo.class: Krumo
+    tremend_krumo.krumo.file: %kernel.root_dir%/../vendor/bundles/Tremend/KrumoBundle/Krumo/Krumo.php
 
 services:
-#    marty_krumo.example:
-#        class: %marty_krumo.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
+    tremend_krumo.krumo:
+        class: %tremend_krumo.krumo.class%
+        file: %tremend_krumo.krumo.file%
+        arguments: [@kernel]
+    krumo:
+        alias: tremend_krumo.krumo
