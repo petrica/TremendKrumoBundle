@@ -53,5 +53,3 @@ Krumo class is defined as a service for Symfony2 and it is loaded automatically 
 
 This plugin is sponsored by [Tremend Software Consulting Romania](http://www.tremend.ro)
 
-![Tremend Software Consulting](http://www.tremend.ro/sites/all/themes/tremend/images/logo.png)
-
